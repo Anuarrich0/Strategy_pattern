@@ -11,11 +11,11 @@
 <text x="980" y="38" text-anchor="middle" font-size="28" font-weight="700">Taxi Strategy — UML class diagram</text>
 <rect x="60" y="190" width="910" height="915" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
 <rect x="1010" y="190" width="910" height="915" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
-<text class="section" x="80" y="219">PRICING FAMILY</text><text class="section" x="1030" y="219">DRIVER MATCHING FAMILY</text>
+<text class="section" x="80" y="219">PRICING FAMILY (taxi.pricing)</text><text class="section" x="1030" y="219">DRIVER MATCHING FAMILY (taxi.matching)</text>
 <rect x="60" y="1140" width="910" height="455" rx="14" fill="#f0fdf4" stroke="#bbf7d0"/>
-<text class="section" x="80" y="1170">EXTERNAL DATA ISOLATION</text>
+<text class="section" x="80" y="1170">EXTERNAL DATA ISOLATION (taxi.demand)</text>
 <rect x="1010" y="1140" width="910" height="455" rx="14" fill="#fffbeb" stroke="#fde68a"/>
-<text class="section" x="1030" y="1170">DOMAIN DATA</text>
+<text class="section" x="1030" y="1170">DOMAIN DATA (taxi.model)</text>
 <g id="Main"><rect x="800" y="70" width="360" height="100" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
 <text class="kind" x="980.0" y="93" text-anchor="middle">«client»</text>
 <text class="name" x="980.0" y="124" text-anchor="middle">Main</text>
@@ -186,5 +186,5 @@
 <text x="1080" y="1540" font-size="17">Parameter types also indicate data dependencies.</text>
 <text x="80" y="1640" font-size="18" font-weight="700">Notation</text>
 <text x="80" y="1674" font-size="17">+ public    - private    solid arrow: stored reference    dashed arrow: dependency    dashed hollow triangle: implements    filled diamond: composition</text>
-<text x="80" y="1703" font-size="16" fill="#475569">All 18 production types in package taxi. Selectors instantiate concrete strategies; contexts delegate through interfaces. Test classes omitted.</text>
+<text x="80" y="1703" font-size="16" fill="#475569">18 production types in four packages; entry point: taxi.Main. Selectors choose strategies; contexts delegate. Tests omitted.</text>
 </svg>

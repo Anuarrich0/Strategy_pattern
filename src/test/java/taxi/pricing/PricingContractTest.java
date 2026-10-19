@@ -1,4 +1,8 @@
-package taxi;
+package taxi.pricing;
+
+import taxi.demand.Demand;
+import taxi.demand.DemandSource;
+import taxi.model.Ride;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

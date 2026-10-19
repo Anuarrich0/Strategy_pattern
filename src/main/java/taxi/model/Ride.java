@@ -1,4 +1,4 @@
-package taxi;
+package taxi.model;
 
 public record Ride(double distanceKm, int durationMinutes, boolean airport, boolean premium) {
     public Ride {

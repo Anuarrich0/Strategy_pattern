@@ -1,5 +1,14 @@
 package taxi;
 
+import taxi.demand.Demand;
+import taxi.model.Driver;
+import taxi.matching.DriverMatchingContext;
+import taxi.matching.DriverSelector;
+import taxi.pricing.PricingContext;
+import taxi.pricing.PricingSelector;
+import taxi.model.Ride;
+import taxi.demand.SimulatedDemandSource;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

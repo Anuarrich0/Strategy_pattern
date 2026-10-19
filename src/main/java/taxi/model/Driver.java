@@ -1,4 +1,4 @@
-package taxi;
+package taxi.model;
 
 public record Driver(String name, double distanceKm, double rating, int idleMinutes) {
     public Driver {

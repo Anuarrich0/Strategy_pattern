@@ -2,13 +2,54 @@
 
 Variant 3, Ride-Hailing. This Java console program calculates a fare and selects a driver using two independent families of interchangeable algorithms. Each family has three strategies, its own context, a separate automatic selector, manual selection, runtime switching, and JUnit 5 tests.
 
+## Project folders
+
+```text
+src/main/java/taxi/
+  Main.java                 console menu and program entry point
+  pricing/                  fare strategies, context, selector
+    PricingStrategy.java
+    PricingContext.java
+    PricingSelector.java
+    StandardPricing.java
+    SurgePricing.java
+    AirportPricing.java
+  matching/                 driver strategies, context, selector
+    DriverMatchingStrategy.java
+    DriverMatchingContext.java
+    DriverSelector.java
+    NearestDriver.java
+    HighestRatedDriver.java
+    LongestIdleDriver.java
+  demand/                   external demand data and source
+    Demand.java
+    DemandSource.java
+    SimulatedDemandSource.java
+  model/                    trip and driver data
+    Ride.java
+    Driver.java
+
+src/test/java/taxi/
+  MainTest.java              console and encoding checks
+  StrategyExtensionTest.java cross-family extension checks
+  pricing/
+    PricingContractTest.java
+  matching/
+    DriverMatchingTest.java
+
+docs/                       UML images and editable source
+target/                     generated Maven output
+```
+
+Java package names follow these folders. `taxi.Main` remains the entry point for VS Code and the executable JAR.
+
 ## UML class diagram
 
 ![Taxi Strategy UML class diagram](docs/class-diagram.svg)
 
 [Open full-size SVG](docs/class-diagram.svg) · [Download PNG](docs/class-diagram.png) · [Editable PlantUML source](docs/class-diagram.puml)
 
-All 18 production types are shown. Solid arrows indicate stored references; dashed arrows indicate dependencies; dashed lines with hollow triangles indicate interface implementation. The filled diamond shows that SurgePricing creates and owns its StandardPricing helper. Constructor injection is an association, since the injected strategy or demand source can be shared. Selectors return concrete strategy implementations; contexts call the interfaces. Record accessors, implicit constructors, and test classes are omitted for readability.
+All 18 production types are shown, grouped by their source packages. Solid arrows indicate stored references; dashed arrows indicate dependencies; dashed lines with hollow triangles indicate interface implementation. The filled diamond shows that SurgePricing creates and owns its StandardPricing helper. Constructor injection is an association, since the injected strategy or demand source can be shared. Selectors return concrete strategy implementations; contexts call the interfaces. Record accessors, implicit constructors, and test classes are omitted for readability.
 
 ## Build and run
 
@@ -159,6 +200,8 @@ Template Method defines a fixed algorithm skeleton in a superclass and lets subc
 2. [After: Strategy refactoring with driver matching and console demo](https://github.com/Anuarrich0/Strategy_pattern/commit/43a1e4fb2326739967067846def673fc2e562577). Algorithms move to StandardPricing, SurgePricing, and AirportPricing. PricingContext becomes a simple delegate accepting PricingStrategy. The driver family and full demo are added.
 
 `PricingContractTest.java` is unchanged between these commits. Its 19 invocations check exact prices, airport excess-distance boundaries, surge floor/cap, all pricing selector branches, runtime switching, invalid inputs, and a nonnegative-fare property across all three strategies. The baseline passed all 19 before the refactor.
+
+A later folder cleanup moves the current contract test to `src/test/java/taxi/pricing/PricingContractTest.java` and updates its package/imports. Its test body and assertions remain the same. The historical before/after links retain the original layout.
 
 The tests call `new PricingContext(selector.manual(name))` on both commits. The selector returns a legacy Choice in the baseline and a PricingStrategy after extraction; tests do not depend on that internal representation. Both commits compile independently.
 

@@ -1,4 +1,7 @@
-package taxi;
+package taxi.matching;
+
+import taxi.model.Driver;
+import taxi.model.Ride;
 
 import java.util.List;
 import java.util.stream.Stream;

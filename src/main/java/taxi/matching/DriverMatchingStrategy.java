@@ -1,4 +1,6 @@
-package taxi;
+package taxi.matching;
+
+import taxi.model.Driver;
 
 import java.util.List;
 

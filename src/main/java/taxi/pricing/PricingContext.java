@@ -1,4 +1,6 @@
-package taxi;
+package taxi.pricing;
+
+import taxi.model.Ride;
 
 import java.util.Objects;
 

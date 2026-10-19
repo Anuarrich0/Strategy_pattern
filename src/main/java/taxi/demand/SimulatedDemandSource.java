@@ -1,4 +1,4 @@
-package taxi;
+package taxi.demand;
 
 import java.util.Objects;
 

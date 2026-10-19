@@ -1,4 +1,6 @@
-package taxi;
+package taxi.pricing;
+
+import taxi.model.Ride;
 
 public final class AirportPricing implements PricingStrategy {
     @Override public long price(Ride ride) {

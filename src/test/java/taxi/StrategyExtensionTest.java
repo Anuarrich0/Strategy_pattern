@@ -1,5 +1,14 @@
 package taxi;
 
+import taxi.demand.Demand;
+import taxi.model.Driver;
+import taxi.matching.DriverMatchingContext;
+import taxi.pricing.PricingContext;
+import taxi.model.Ride;
+import taxi.demand.SimulatedDemandSource;
+import taxi.pricing.StandardPricing;
+import taxi.pricing.SurgePricing;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;

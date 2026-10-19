@@ -1,4 +1,6 @@
-package taxi;
+package taxi.matching;
+
+import taxi.model.Ride;
 
 import java.util.Locale;
 

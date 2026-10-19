@@ -1,4 +1,4 @@
-package taxi;
+package taxi.demand;
 
 public record Demand(int requests, int availableDrivers) {
     public Demand {

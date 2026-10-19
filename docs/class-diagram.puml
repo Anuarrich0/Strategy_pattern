@@ -9,7 +9,7 @@ class Main <<client>> {
   + {static} main(args: String[]): void
 }
 
-package "Pricing family" {
+package "taxi.pricing" {
   class PricingSelector {
     - source: DemandSource
     + PricingSelector(source: DemandSource)
@@ -39,7 +39,7 @@ package "Pricing family" {
   }
 }
 
-package "Driver matching family" {
+package "taxi.matching" {
   class DriverSelector {
     + select(ride: Ride): DriverMatchingStrategy
     + manual(name: String): DriverMatchingStrategy
@@ -64,7 +64,7 @@ package "Driver matching family" {
   }
 }
 
-package "External data isolation" {
+package "taxi.demand" {
   interface DemandSource {
     + current(): Demand
   }
@@ -79,7 +79,7 @@ package "External data isolation" {
   }
 }
 
-package "Domain data" {
+package "taxi.model" {
   class Ride <<record>> {
     - distanceKm: double
     - durationMinutes: int
@@ -121,7 +121,7 @@ PricingStrategy ..> Ride : parameter
 DriverMatchingStrategy ..> Driver : input / result
 
 legend bottom
-  All 18 production types in package taxi; test classes omitted.
+  18 production types in taxi.pricing, taxi.matching, taxi.demand, taxi.model; Main is taxi.Main. Test classes omitted.
   + public; - private; record accessors and implicit constructors omitted.
   Selectors create concrete strategies; contexts delegate via interfaces.
 endlegend
