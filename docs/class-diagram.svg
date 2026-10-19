@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1960" height="1720" viewBox="0 0 1960 1720" role="img" aria-labelledby="title desc">
+<title id="title">Taxi Strategy UML class diagram</title>
+<desc id="desc">All eighteen production types: two strategy families, contexts, selectors, external demand abstraction, data records, and the Main client.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1 L11 6 L1 11" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+<marker id="triangle" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="13" markerHeight="13" orient="auto"><path d="M1 1 L13 7 L1 13 Z" fill="white" stroke="#334155" stroke-width="1.3"/></marker>
+<marker id="diamond" viewBox="0 0 16 12" refX="15" refY="6" markerWidth="14" markerHeight="12" orient="auto-start-reverse"><path d="M1 6 L8 1 L15 6 L8 11 Z" fill="#334155" stroke="#334155"/></marker>
+</defs>
+<style>text{font-family:Arial,sans-serif;fill:#0f172a}.name{font-size:21px;font-weight:700}.member{font-family:Consolas,monospace;font-size:16px}.kind{font-size:15px;fill:#475569}.label{font-size:16px;fill:#334155;paint-order:stroke;stroke:white;stroke-width:5px;stroke-linejoin:round}.section{font-size:19px;font-weight:700;fill:#334155}</style>
+<rect width="1960" height="1720" fill="white"/>
+<text x="980" y="38" text-anchor="middle" font-size="28" font-weight="700">Taxi Strategy — UML class diagram</text>
+<rect x="60" y="190" width="910" height="915" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<rect x="1010" y="190" width="910" height="915" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+<text class="section" x="80" y="219">PRICING FAMILY</text><text class="section" x="1030" y="219">DRIVER MATCHING FAMILY</text>
+<rect x="60" y="1140" width="910" height="455" rx="14" fill="#f0fdf4" stroke="#bbf7d0"/>
+<text class="section" x="80" y="1170">EXTERNAL DATA ISOLATION</text>
+<rect x="1010" y="1140" width="910" height="455" rx="14" fill="#fffbeb" stroke="#fde68a"/>
+<text class="section" x="1030" y="1170">DOMAIN DATA</text>
+<g id="Main"><rect x="800" y="70" width="360" height="100" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="980.0" y="93" text-anchor="middle">«client»</text>
+<text class="name" x="980.0" y="124" text-anchor="middle">Main</text>
+<path d="M800 140 H1160" stroke="#334155"/>
+<text class="member" x="813" y="165">+ main(args: String[]): void</text>
+</g>
+<g id="PricingSelector"><rect x="100" y="245" width="650" height="170" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="425.0" y="275" text-anchor="middle">PricingSelector</text>
+<path d="M100 291 H750" stroke="#334155"/>
+<text class="member" x="113" y="316">- source: DemandSource</text>
+<path d="M100 331 H750" stroke="#94a3b8"/>
+<text class="member" x="113" y="348">+ PricingSelector(source: DemandSource)</text>
+<text class="member" x="113" y="373">+ select(ride: Ride): PricingStrategy</text>
+<text class="member" x="113" y="398">+ manual(name: String): PricingStrategy</text>
+</g>
+<g id="DriverSelector"><rect x="1120" y="245" width="650" height="125" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="1445.0" y="275" text-anchor="middle">DriverSelector</text>
+<path d="M1120 291 H1770" stroke="#334155"/>
+<text class="member" x="1133" y="316">+ select(ride: Ride): DriverMatchingStrategy</text>
+<text class="member" x="1133" y="341">+ manual(name: String): DriverMatchingStrategy</text>
+</g>
+<g id="PricingContext"><rect x="100" y="465" width="650" height="170" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="425.0" y="495" text-anchor="middle">PricingContext</text>
+<path d="M100 511 H750" stroke="#334155"/>
+<text class="member" x="113" y="536">- strategy: PricingStrategy</text>
+<path d="M100 551 H750" stroke="#94a3b8"/>
+<text class="member" x="113" y="568">+ PricingContext(strategy: PricingStrategy)</text>
+<text class="member" x="113" y="593">+ setStrategy(strategy: PricingStrategy): void</text>
+<text class="member" x="113" y="618">+ price(ride: Ride): long</text>
+</g>
+<g id="DriverMatchingContext"><rect x="1120" y="465" width="650" height="170" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="1445.0" y="495" text-anchor="middle">DriverMatchingContext</text>
+<path d="M1120 511 H1770" stroke="#334155"/>
+<text class="member" x="1133" y="536">- strategy: DriverMatchingStrategy</text>
+<path d="M1120 551 H1770" stroke="#94a3b8"/>
+<text class="member" x="1133" y="568">+ DriverMatchingContext(strategy: DriverMatchingStrategy)</text>
+<text class="member" x="1133" y="593">+ setStrategy(strategy: DriverMatchingStrategy): void</text>
+<text class="member" x="1133" y="618">+ match(drivers: List&lt;Driver&gt;): Driver</text>
+</g>
+<g id="PricingStrategy"><rect x="100" y="720" width="650" height="110" fill="#eff6ff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="425.0" y="743" text-anchor="middle">«interface»</text>
+<text class="name" x="425.0" y="774" text-anchor="middle">PricingStrategy</text>
+<path d="M100 790 H750" stroke="#334155"/>
+<text class="member" x="113" y="815">+ price(ride: Ride): long</text>
+</g>
+<g id="DriverMatchingStrategy"><rect x="1120" y="720" width="650" height="110" fill="#eff6ff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="1445.0" y="743" text-anchor="middle">«interface»</text>
+<text class="name" x="1445.0" y="774" text-anchor="middle">DriverMatchingStrategy</text>
+<path d="M1120 790 H1770" stroke="#334155"/>
+<text class="member" x="1133" y="815">+ match(availableDrivers: List&lt;Driver&gt;): Driver</text>
+</g>
+<g id="StandardPricing"><rect x="80" y="925" width="280" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="220.0" y="955" text-anchor="middle">StandardPricing</text>
+<path d="M80 971 H360" stroke="#334155"/>
+<text class="member" x="93" y="996">+ price(ride: Ride): long</text>
+</g>
+<g id="SurgePricing"><rect x="380" y="925" width="290" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="525.0" y="955" text-anchor="middle">SurgePricing</text>
+<path d="M380 971 H670" stroke="#334155"/>
+<text class="member" x="393" y="996">- source: DemandSource</text>
+<text class="member" x="393" y="1021">- base: StandardPricing</text>
+<path d="M380 1036 H670" stroke="#94a3b8"/>
+<text class="member" x="393" y="1053">+ price(ride: Ride): long</text>
+</g>
+<g id="AirportPricing"><rect x="690" y="925" width="260" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="820.0" y="955" text-anchor="middle">AirportPricing</text>
+<path d="M690 971 H950" stroke="#334155"/>
+<text class="member" x="703" y="996">+ price(ride: Ride): long</text>
+</g>
+<g id="NearestDriver"><rect x="1030" y="925" width="280" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="1170.0" y="955" text-anchor="middle">NearestDriver</text>
+<path d="M1030 971 H1310" stroke="#334155"/>
+<text class="member" x="1043" y="996">+ match(List&lt;Driver&gt;)</text>
+<text class="member" x="1043" y="1021">  : Driver</text>
+</g>
+<g id="HighestRatedDriver"><rect x="1330" y="925" width="280" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="1470.0" y="955" text-anchor="middle">HighestRatedDriver</text>
+<path d="M1330 971 H1610" stroke="#334155"/>
+<text class="member" x="1343" y="996">+ match(List&lt;Driver&gt;)</text>
+<text class="member" x="1343" y="1021">  : Driver</text>
+</g>
+<g id="LongestIdleDriver"><rect x="1630" y="925" width="280" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="name" x="1770.0" y="955" text-anchor="middle">LongestIdleDriver</text>
+<path d="M1630 971 H1910" stroke="#334155"/>
+<text class="member" x="1643" y="996">+ match(List&lt;Driver&gt;)</text>
+<text class="member" x="1643" y="1021">  : Driver</text>
+</g>
+<g id="DemandSource"><rect x="360" y="1210" width="400" height="110" fill="#eff6ff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="560.0" y="1233" text-anchor="middle">«interface»</text>
+<text class="name" x="560.0" y="1264" text-anchor="middle">DemandSource</text>
+<path d="M360 1280 H760" stroke="#334155"/>
+<text class="member" x="373" y="1305">+ current(): Demand</text>
+</g>
+<g id="SimulatedDemandSource"><rect x="80" y="1430" width="390" height="140" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="275.0" y="1453" text-anchor="middle">«record»</text>
+<text class="name" x="275.0" y="1484" text-anchor="middle">SimulatedDemandSource</text>
+<path d="M80 1500 H470" stroke="#334155"/>
+<text class="member" x="93" y="1525">- demand: Demand</text>
+<path d="M80 1540 H470" stroke="#94a3b8"/>
+<text class="member" x="93" y="1557">+ current(): Demand</text>
+</g>
+<g id="Demand"><rect x="570" y="1405" width="350" height="165" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="745.0" y="1428" text-anchor="middle">«record»</text>
+<text class="name" x="745.0" y="1459" text-anchor="middle">Demand</text>
+<path d="M570 1475 H920" stroke="#334155"/>
+<text class="member" x="583" y="1500">- requests: int</text>
+<text class="member" x="583" y="1525">- availableDrivers: int</text>
+<path d="M570 1540 H920" stroke="#94a3b8"/>
+<text class="member" x="583" y="1557">+ ratio(): double</text>
+</g>
+<g id="Ride"><rect x="1060" y="1230" width="370" height="190" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="1245.0" y="1253" text-anchor="middle">«record»</text>
+<text class="name" x="1245.0" y="1284" text-anchor="middle">Ride</text>
+<path d="M1060 1300 H1430" stroke="#334155"/>
+<text class="member" x="1073" y="1325">- distanceKm: double</text>
+<text class="member" x="1073" y="1350">- durationMinutes: int</text>
+<text class="member" x="1073" y="1375">- airport: boolean</text>
+<text class="member" x="1073" y="1400">- premium: boolean</text>
+</g>
+<g id="Driver"><rect x="1490" y="1230" width="370" height="190" fill="#ffffff" stroke="#334155" stroke-width="1.7"/>
+<text class="kind" x="1675.0" y="1253" text-anchor="middle">«record»</text>
+<text class="name" x="1675.0" y="1284" text-anchor="middle">Driver</text>
+<path d="M1490 1300 H1860" stroke="#334155"/>
+<text class="member" x="1503" y="1325">- name: String</text>
+<text class="member" x="1503" y="1350">- distanceKm: double</text>
+<text class="member" x="1503" y="1375">- rating: double</text>
+<text class="member" x="1503" y="1400">- idleMinutes: int</text>
+</g>
+<polyline points="900,170 900,230 425,230 425,245" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="570" y="185">uses</text>
+<polyline points="1080,170 1080,230 1445,230 1445,245" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="1210" y="185">uses</text>
+<polyline points="800,120 40,120 40,540 100,540" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="90" y="110">injects / calls</text>
+<polyline points="1160,120 1940,120 1940,540 1770,540" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="1710" y="110">injects / calls</text>
+<polyline points="750,325 850,325 850,770 750,770" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="785" y="690">returns strategy</text>
+<polyline points="1770,325 1830,325 1830,770 1770,770" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="1745" y="690">returns strategy</text>
+<polyline points="425,635 425,720" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="label" x="445" y="677">strategy [1]</text>
+<polyline points="1445,635 1445,720" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="label" x="1465" y="677">strategy [1]</text>
+<polyline points="220,925 220,880 425,880 425,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="525,925 525,880 425,880 425,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="820,925 820,880 425,880 425,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="1170,925 1170,880 1445,880 1445,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="1470,925 1470,880 1445,880 1445,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="1770,925 1770,880 1445,880 1445,830" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="380,1010 360,1010" fill="none" stroke="#334155" stroke-width="1.8" marker-start="url(#diamond)"/>
+<text class="label" x="365" y="1090">base [1]</text>
+<polyline points="525,1065 525,1145 560,1145 560,1210" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="label" x="575" y="1135">source [1]</text>
+<polyline points="100,380 20,380 20,1265 360,1265" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="label" x="90" y="1250">source [1]</text>
+<polyline points="275,1430 275,1360 560,1360 560,1320" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#triangle)"/>
+<polyline points="470,1500 570,1500" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="label" x="478" y="1488">demand [1]</text>
+<polyline points="760,1265 950,1265 950,1450 920,1450" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="840" y="1250">returns</text>
+<polyline points="750,790 990,790 990,1325 1060,1325" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="1000" y="1310">parameter</text>
+<polyline points="1770,800 1930,800 1930,1325 1860,1325" fill="none" stroke="#334155" stroke-width="1.8" stroke-dasharray="8 5" marker-end="url(#arrow)"/>
+<text class="label" x="1775" y="1210">input / result</text>
+<text x="1080" y="1480" font-size="17">Records expose generated accessors matching field names.</text>
+<text x="1080" y="1510" font-size="17">Constructors validate record data.</text>
+<text x="1080" y="1540" font-size="17">Parameter types also indicate data dependencies.</text>
+<text x="80" y="1640" font-size="18" font-weight="700">Notation</text>
+<text x="80" y="1674" font-size="17">+ public    - private    solid arrow: stored reference    dashed arrow: dependency    dashed hollow triangle: implements    filled diamond: composition</text>
+<text x="80" y="1703" font-size="16" fill="#475569">All 18 production types in package taxi. Selectors instantiate concrete strategies; contexts delegate through interfaces. Test classes omitted.</text>
+</svg>

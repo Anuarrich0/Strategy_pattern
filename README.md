@@ -2,6 +2,14 @@
 
 Variant 3, Ride-Hailing. This Java console program calculates a fare and selects a driver using two independent families of interchangeable algorithms. Each family has three strategies, its own context, a separate automatic selector, manual selection, runtime switching, and JUnit 5 tests.
 
+## UML class diagram
+
+![Taxi Strategy UML class diagram](docs/class-diagram.svg)
+
+[Open full-size SVG](docs/class-diagram.svg) · [Download PNG](docs/class-diagram.png) · [Editable PlantUML source](docs/class-diagram.puml)
+
+All 18 production types are shown. Solid arrows indicate stored references; dashed arrows indicate dependencies; dashed lines with hollow triangles indicate interface implementation. The filled diamond shows that SurgePricing creates and owns its StandardPricing helper. Constructor injection is an association, since the injected strategy or demand source can be shared. Selectors return concrete strategy implementations; contexts call the interfaces. Record accessors, implicit constructors, and test classes are omitted for readability.
+
 ## Build and run
 
 Requires **JDK 17 or newer** and **Maven 3.9 or newer**. No application libraries or real API keys are required. JUnit 5 is the only dependency and is used only for tests. The first Maven run needs internet access to download build tools and JUnit.
