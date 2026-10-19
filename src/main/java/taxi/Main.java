@@ -12,9 +12,10 @@ public final class Main {
     private Main() {}
 
     public static void main(String[] args) {
-        PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        PrintStream out = System.out;
         try {
-            if (args.length == 0) interactive(new Scanner(System.in, StandardCharsets.UTF_8), out);
+            if (args.length == 0) interactive(new Scanner(System.in,
+                    System.console() == null ? StandardCharsets.UTF_8 : System.console().charset()), out);
             else run(args, out);
         } catch (IllegalArgumentException error) {
             System.err.println("Error: " + error.getMessage());
@@ -74,25 +75,25 @@ public final class Main {
     }
 
     static void interactive(Scanner input, PrintStream out) {
-        out.println("ТАКСИ — ИНТЕРАКТИВНОЕ МЕНЮ");
+        out.println("ТАКСИ - ИНТЕРАКТИВНОЕ МЕНЮ");
         try {
             while (true) {
-                int start = integer(input, out, "\n1 — Новая поездка; 0 — Выход: ", 0, 1);
+                int start = integer(input, out, "\n1 - Новая поездка; 0 - Выход: ", 0, 1);
                 if (start == 0) {
                     out.println("До свидания!");
                     return;
                 }
-                boolean airport = integer(input, out, "Куда едем? 1 — Город; 2 — Аэропорт: ", 1, 2) == 2;
-                double km = ask(input, out, "Расстояние в км (0–10000): ", value -> {
+                boolean airport = integer(input, out, "Куда едем? 1 - Город; 2 - Аэропорт: ", 1, 2) == 2;
+                double km = ask(input, out, "Расстояние в км (0-10000): ", value -> {
                     double distance = Double.parseDouble(value.replace(',', '.'));
                     new Ride(distance, 0, false, false);
                     return distance;
                 });
-                int minutes = integer(input, out, "Время поездки в минутах (0–10000): ", 0, 10_000);
-                boolean premium = integer(input, out, "Клиент: 1 — Обычный; 2 — Премиум: ", 1, 2) == 2;
+                int minutes = integer(input, out, "Время поездки в минутах (0-10000): ", 0, 10_000);
+                boolean premium = integer(input, out, "Клиент: 1 - Обычный; 2 - Премиум: ", 1, 2) == 2;
                 Ride ride = new Ride(km, minutes, airport, premium);
                 int demandMode = integer(input, out,
-                        "Симуляция внешнего спроса: 1 — Обычный (10/10); 2 — Высокий (20/10): ", 1, 2);
+                        "Симуляция внешнего спроса: 1 - Обычный (10/10); 2 - Высокий (20/10): ", 1, 2);
                 Demand demand = new Demand(demandMode * 10, 10);
                 PricingSelector pricing = new PricingSelector(new SimulatedDemandSource(demand));
                 DriverSelector matching = new DriverSelector();
@@ -101,11 +102,11 @@ public final class Main {
                 List<Driver> drivers = availableDrivers();
                 out.println("\nПоездка: " + (airport ? "аэропорт" : "город") + ", " + km + " км, " + minutes + " мин.");
                 out.println("Доступные водители: " + drivers);
-                out.println("Меняйте режим для этой же поездки — объекты контекстов сохраняются.");
+                out.println("Меняйте режим для этой же поездки - объекты контекстов сохраняются.");
 
                 while (true) {
                     int action = integer(input, out,
-                            "\n1 — Автоматический выбор; 2 — Ручной выбор; 3 — Сравнить все; 0 — Назад: ", 0, 3);
+                            "\n1 - Автоматический выбор; 2 - Ручной выбор; 3 - Сравнить все; 0 - Назад: ", 0, 3);
                     if (action == 0) break;
                     if (action == 3) {
                         demonstrate(ride, demand, out);
@@ -118,9 +119,9 @@ public final class Main {
                         selectedDriver = matching.select(ride);
                     } else {
                         int tariff = integer(input, out,
-                                "Тариф: 1 — Обычный; 2 — По спросу; 3 — Аэропортовый: ", 1, 3);
+                                "Тариф: 1 - Обычный; 2 - По спросу; 3 - Аэропортовый: ", 1, 3);
                         int policy = integer(input, out,
-                                "Водитель: 1 — Ближайший; 2 — Лучший рейтинг; 3 — Дольше всех ждёт: ", 1, 3);
+                                "Водитель: 1 - Ближайший; 2 - Лучший рейтинг; 3 - Дольше всех ждёт: ", 1, 3);
                         selectedFare = pricing.manual(List.of("standard", "surge", "airport").get(tariff - 1));
                         selectedDriver = matching.manual(List.of("nearest", "rated", "idle").get(policy - 1));
                     }
@@ -141,7 +142,7 @@ public final class Main {
         return ask(input, out, prompt, value -> {
             int number = Integer.parseInt(value);
             if (number < min || number > max)
-                throw new IllegalArgumentException("Допустимый диапазон: " + min + "–" + max);
+                throw new IllegalArgumentException("Допустимый диапазон: " + min + "-" + max);
             return number;
         });
     }

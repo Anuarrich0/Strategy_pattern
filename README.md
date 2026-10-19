@@ -27,6 +27,8 @@ On Windows, `./run.cmd` builds and starts the Russian interactive menu in one co
 java -jar target/taxi-strategy-1.0.0.jar --demo
 ```
 
+VS Code's Java **Run** action can also launch `taxi.Main` directly. The application keeps Java's native `System.out` encoding and uses the attached console's input charset, so the Russian menu works in both UTF-8 and Windows CP866 terminals. `run.cmd` selects UTF-8 for its terminal before launching Java. After updating the project, stop the old Java process and run Main again to load the rebuilt classes.
+
 Additional arguments still run a custom demonstration without prompts:
 
 ```powershell
@@ -174,7 +176,7 @@ mvn -f ../taxi-before/pom.xml test
 
 Run `mvn clean verify`. JUnit XML/text reports appear in `target/surefire-reports/`; the runnable JAR appears in `target/`. No live services, current time, random values, or shared mutable fixtures are used.
 
-Verified on JDK 21 with Maven 3.9.12: **51 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 32 matching, extension, and console checks. Console tests cover manual-to-automatic switching, overriding automatic policy, all-strategy comparison, decimal commas, multiple trips, retrying invalid input, explicit exit, and closed input. The actual `run.cmd` was exercised in a terminal with an airport/premium trip, manual selection, automatic selection, comparison, and clean exit. Russian menu text displayed correctly. The non-interactive demo and invalid-argument exit status are also verified.
+Verified on JDK 21 with Maven 3.9.12: **53 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 34 matching, extension, and console checks. Console tests cover manual-to-automatic switching, overriding automatic policy, all-strategy comparison, decimal commas, multiple trips, retrying invalid input, explicit exit, and closed input. Two additional tests launch the real Main process with UTF-8 and CP866 output encodings and verify readable Cyrillic. The actual `run.cmd` was exercised in a terminal with an airport/premium trip, manual selection, automatic selection, comparison, and clean exit. Direct `java -cp target/classes taxi.Main` execution was also checked in a CP866 terminal, including invalid input and exit. The non-interactive demo and invalid-argument exit status are also verified.
 
 | Requirement | Implementation or evidence |
 |---|---|

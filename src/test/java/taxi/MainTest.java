@@ -2,9 +2,14 @@ package taxi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
@@ -87,5 +92,26 @@ class MainTest {
         assertTrue(console("0\n").contains("До свидания!"));
         assertTrue(console("").contains("Ввод завершён"));
         assertTrue(console("1\n2\n").contains("Ввод завершён"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"UTF-8", "IBM866"})
+    void realMainUsesTheRuntimeOutputEncoding(String encoding) throws Exception {
+        String java = ProcessHandle.current().info().command().orElseThrow();
+        String classes = Path.of(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
+        Process process = new ProcessBuilder(java, "-Dstdout.encoding=" + encoding,
+                "-Dsun.stdout.encoding=" + encoding, "-cp", classes, "taxi.Main")
+                .redirectErrorStream(true).start();
+        try {
+            process.getOutputStream().write("0\n".getBytes(StandardCharsets.US_ASCII));
+            process.getOutputStream().close();
+            assertTrue(process.waitFor(15, TimeUnit.SECONDS), "Menu did not exit");
+            String output = new String(process.getInputStream().readAllBytes(), Charset.forName(encoding));
+            assertEquals(0, process.exitValue(), output);
+            assertTrue(output.contains("ТАКСИ - ИНТЕРАКТИВНОЕ МЕНЮ"), output);
+            assertTrue(output.contains("До свидания!"), output);
+        } finally {
+            process.destroyForcibly();
+        }
     }
 }
