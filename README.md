@@ -126,7 +126,7 @@ Template Method defines a fixed algorithm skeleton in a superclass and lets subc
 ## Refactoring history
 
 1. [Before: switch-based pricing with contract tests](https://github.com/Anuarrich0/Strategy_pattern/commit/c7553a479d7b361f857ea5da1103051849216f01). PricingContext owns all three algorithms and branches on the selected pricing name.
-2. AFTER_REFACTOR_LINK. Algorithms move to StandardPricing, SurgePricing, and AirportPricing. PricingContext becomes a simple delegate accepting PricingStrategy. The driver family and full demo are added.
+2. [After: Strategy refactoring with driver matching and console demo](https://github.com/Anuarrich0/Strategy_pattern/commit/43a1e4fb2326739967067846def673fc2e562577). Algorithms move to StandardPricing, SurgePricing, and AirportPricing. PricingContext becomes a simple delegate accepting PricingStrategy. The driver family and full demo are added.
 
 `PricingContractTest.java` is unchanged between these commits. Its 19 invocations check exact prices, airport excess-distance boundaries, surge floor/cap, all pricing selector branches, runtime switching, invalid inputs, and a nonnegative-fare property across all three strategies. The baseline passed all 19 before the refactor.
 
@@ -143,6 +143,8 @@ mvn -f ../taxi-before/pom.xml test
 ## Tests and requirement checklist
 
 Run `mvn clean verify`. JUnit XML/text reports appear in `target/surefire-reports/`; the runnable JAR appears in `target/`. No live services, current time, random values, or shared mutable fixtures are used.
+
+Verified on JDK 21 with Maven 3.9.12: **46 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 27 matching, extension, and console checks. The actual `run.cmd`, default JAR execution, custom airport/premium execution, and invalid-input exit status were also checked.
 
 | Requirement | Implementation or evidence |
 |---|---|
