@@ -19,15 +19,37 @@ mvn clean verify
 java -jar target/taxi-strategy-1.0.0.jar
 ```
 
-On Windows, `./run.cmd` builds and runs the default demonstration in one command. Additional arguments are passed to the program:
+On Windows, `./run.cmd` builds and starts the Russian interactive menu in one command. With no arguments, the JAR also opens this menu. To run the fixed demonstration without prompts:
+
+```powershell
+.\run.cmd --demo
+# Or, after building:
+java -jar target/taxi-strategy-1.0.0.jar --demo
+```
+
+Additional arguments still run a custom demonstration without prompts:
 
 ```powershell
 .\run.cmd 25 40 true true 100 10
 ```
 
-The six optional arguments are `distanceKm durationMinutes airport premium requests availableDrivers`. Supply either all six or none. Booleans accept `true` and `false`. Invalid input prints an error and exits with status 1. Distances are kilometres, time is minutes, prices are whole **KZT**, rounded to the nearest tenge with `Math.round`. All figures are fictional coursework tariffs.
+The six optional arguments are `distanceKm durationMinutes airport premium requests availableDrivers`. Supply all six to bypass the menu. Booleans accept `true` and `false`. Invalid CLI arguments print an error and exit with status 1. Distances are kilometres, time is minutes, prices are whole **KZT**, rounded to the nearest tenge with `Math.round`. All figures are fictional coursework tariffs.
 
 The demo prints the same ride through all three pricing algorithms, then the automatic selection. It also prints the same available-driver list through all three matching algorithms, then the automatic selection. Each loop reuses one context and calls `setStrategy()` during execution.
+
+## Interactive menu
+
+1. Choose **New trip** (`1`), then **City** (`1`) or **Airport** (`2`).
+2. Enter distance and duration; choose ordinary or premium customer. Decimal distances accept a dot or comma.
+3. Choose the simulated external demand scenario: ordinary (10 requests / 10 drivers) or high (20 / 10). This configures the simulated source; it does not select the fare directly.
+4. For the current trip, choose **Automatic** (`1`), **Manual** (`2`), or **Compare all** (`3`).
+5. Manual mode asks you to choose the pricing strategy and the driver strategy independently. Automatic mode delegates both decisions to the selectors.
+6. Change the mode repeatedly for the same ride. Its PricingContext and DriverMatchingContext are reused with `setStrategy()`. Compare all prints the full same-input demonstration, including runtime switching in its comparison contexts.
+7. Choose **Back** (`0`) to enter another trip, then **Exit** (`0`) to close the program. End-of-input also exits cleanly.
+
+Invalid menu values are re-requested at the current prompt. Choosing city or airport supplies the trip category; the simulation calculates from entered distance and time. The three available drivers are displayed with their selection data.
+
+Example defense sequence: airport, 25 km, 40 min, premium customer, high demand. In manual mode choose standard fare and longest-idle driver: **4300 KZT, Miras**. Without re-entering the trip, choose automatic mode: **5500 KZT, Dias**, since airport pricing and premium matching take precedence. Compare all then shows every algorithm on these same inputs. This menu fulfills the assignment's console-demo requirement.
 
 ## Algorithms and selection rules
 
@@ -57,7 +79,7 @@ The airport matching policy gives longer-waiting drivers priority for these trip
 
 ## Live demonstration
 
-Default input: 10 km, 15 minutes, ordinary trip, ordinary customer, 20 requests, 10 available drivers.
+The `--demo` input is 10 km, 15 minutes, ordinary trip, ordinary customer, 20 requests, 10 available drivers.
 
 ```text
 standard -> 2000 KZT
@@ -90,7 +112,7 @@ java -jar target/taxi-strategy-1.0.0.jar 25 40 true true 100 10
 
 ## Isolation from external change
 
-`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `SimulatedDemandSource` provides validated counts from the demo arguments; no real API is needed. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
+`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `SimulatedDemandSource` provides validated counts from the selected menu scenario or demo arguments; no real API is needed. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
 
 Tests inject a fake such as `() -> new Demand(20, 10)`. A separate test changes fake demand between calls to the same strategy to prove that the source is read again. Another test proves an external failure propagates instead of silently inventing a fare. Demand requires 0..1000000 requests and 1..1000000 available drivers, preventing division by zero. The demand denominator represents the simulated city-wide fleet; the three demo drivers are a separate eligible candidate pool.
 
@@ -117,7 +139,7 @@ Each responsibility below is one sentence of at most 25 words without the words 
 | LongestIdleDriver | Selects the longest-waiting available driver. |
 | DriverMatchingContext | Delegates driver matching to its replaceable strategy. |
 | DriverSelector | Chooses a matching strategy from customer conditions. |
-| Main | Demonstrates interchangeable taxi algorithms. |
+| Main | Runs the taxi console interface. |
 | PricingContractTest | Verifies stable pricing behavior across refactoring. |
 | DriverMatchingTest | Verifies matching algorithms against deterministic examples. |
 | StrategyExtensionTest | Verifies strategy extension through injected dependencies. |
@@ -152,7 +174,7 @@ mvn -f ../taxi-before/pom.xml test
 
 Run `mvn clean verify`. JUnit XML/text reports appear in `target/surefire-reports/`; the runnable JAR appears in `target/`. No live services, current time, random values, or shared mutable fixtures are used.
 
-Verified on JDK 21 with Maven 3.9.12: **46 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 27 matching, extension, and console checks. The actual `run.cmd`, default JAR execution, custom airport/premium execution, and invalid-input exit status were also checked.
+Verified on JDK 21 with Maven 3.9.12: **51 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 32 matching, extension, and console checks. Console tests cover manual-to-automatic switching, overriding automatic policy, all-strategy comparison, decimal commas, multiple trips, retrying invalid input, explicit exit, and closed input. The actual `run.cmd` was exercised in a terminal with an airport/premium trip, manual selection, automatic selection, comparison, and clean exit. Russian menu text displayed correctly. The non-interactive demo and invalid-argument exit status are also verified.
 
 | Requirement | Implementation or evidence |
 |---|---|
