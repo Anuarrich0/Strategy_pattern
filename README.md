@@ -41,17 +41,16 @@ The demo prints the same ride through all three pricing algorithms, then the aut
 
 ## Interactive menu
 
-1. Choose **New trip** (`1`), then **City** (`1`) or **Airport** (`2`).
-2. Enter distance and duration; choose ordinary or premium customer. Decimal distances accept a dot or comma.
-3. Choose the simulated external demand scenario: ordinary (10 requests / 10 drivers) or high (20 / 10). This configures the simulated source; it does not select the fare directly.
-4. For the current trip, choose **Automatic** (`1`), **Manual** (`2`), or **Compare all** (`3`).
-5. Manual mode asks you to choose the pricing strategy and the driver strategy independently. Automatic mode delegates both decisions to the selectors.
-6. Change the mode repeatedly for the same ride. Its PricingContext and DriverMatchingContext are reused with `setStrategy()`. Compare all prints the full same-input demonstration, including runtime switching in its comparison contexts.
-7. Choose **Back** (`0`) to enter another trip, then **Exit** (`0`) to close the program. End-of-input also exits cleanly.
+The normal launch needs only two choices:
 
-Invalid menu values are re-requested at the current prompt. Choosing city or airport supplies the trip category; the simulation calculates from entered distance and time. The three available drivers are displayed with their selection data.
+1. Choose **City** (`1`, a sample 10 km trip) or **Airport** (`2`, a sample 25 km trip). Choose `0` to exit.
+2. Choose **Automatic** (`1`) to get the fare and driver immediately, **Manual** (`2`) to choose both strategies, or **Compare all** (`3`) to show every algorithm on the same inputs.
 
-Example defense sequence: airport, 25 km, 40 min, premium customer, high demand. In manual mode choose standard fare and longest-idle driver: **4300 KZT, Miras**. Without re-entering the trip, choose automatic mode: **5500 KZT, Dias**, since airport pricing and premium matching take precedence. Compare all then shows every algorithm on these same inputs. This menu fulfills the assignment's console-demo requirement.
+The same trip remains open, so you can change strategies repeatedly without entering it again. Choose **Another trip** (`0`) to return to the route menu. Invalid numbers are re-requested; closed input exits cleanly. Results and comparison labels are in Russian, without Java class names or raw records.
+
+Trip details are preset demonstration data: city is 10 km / 15 min; airport is 25 km / 40 min; both use an ordinary customer. Simulated external demand is configured as 20 requests / 10 available drivers. The menu does not ask users to configure time, customer type, or the demand source. These fields remain available through the optional CLI inputs for testing every selector rule.
+
+Example defense sequence: choose airport (`2`), manual mode (`2`), standard fare (`1`), highest-rated driver (`2`): **4300 KZT, Dias**. Choose automatic mode (`1`) for the same trip: **5500 KZT, Miras**. Compare all (`3`) then displays every fare and every matching result. The pricing and matching contexts retain their identity while manual and automatic actions call `setStrategy()`. The comparison also switches strategies within its own two contexts. This fulfills the assignment's console-demo requirement.
 
 ## Algorithms and selection rules
 
@@ -84,15 +83,14 @@ The airport matching policy gives longer-waiting drivers priority for these trip
 The `--demo` input is 10 km, 15 minutes, ordinary trip, ordinary customer, 20 requests, 10 available drivers.
 
 ```text
-standard -> 2000 KZT
-surge -> 4000 KZT
-airport -> 4500 KZT
-Automatic: SurgePricing -> 4000 KZT
+Обычный: 2000 KZT
+По спросу: 4000 KZT
+Аэропортовый: 4500 KZT
 
-nearest -> Aruzhan
-rated -> Dias
-idle -> Miras
-Automatic: NearestDriver -> Aruzhan
+Ближайший: Aruzhan
+Лучший рейтинг: Dias
+Дольше всех ждёт: Miras
+Автоматически: 4000 KZT, водитель Aruzhan
 ```
 
 The pool is Aruzhan (1 km, rating 4.6, idle 5 min), Dias (3 km, rating 4.9, idle 12 min), Miras (2 km, rating 4.7, idle 40 min).
@@ -114,7 +112,7 @@ java -jar target/taxi-strategy-1.0.0.jar 25 40 true true 100 10
 
 ## Isolation from external change
 
-`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `SimulatedDemandSource` provides validated counts from the selected menu scenario or demo arguments; no real API is needed. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
+`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `SimulatedDemandSource` provides validated counts from preset menu data or optional demo arguments; no real API is needed. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
 
 Tests inject a fake such as `() -> new Demand(20, 10)`. A separate test changes fake demand between calls to the same strategy to prove that the source is read again. Another test proves an external failure propagates instead of silently inventing a fare. Demand requires 0..1000000 requests and 1..1000000 available drivers, preventing division by zero. The demand denominator represents the simulated city-wide fleet; the three demo drivers are a separate eligible candidate pool.
 
@@ -176,7 +174,7 @@ mvn -f ../taxi-before/pom.xml test
 
 Run `mvn clean verify`. JUnit XML/text reports appear in `target/surefire-reports/`; the runnable JAR appears in `target/`. No live services, current time, random values, or shared mutable fixtures are used.
 
-Verified on JDK 21 with Maven 3.9.12: **53 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 34 matching, extension, and console checks. Console tests cover manual-to-automatic switching, overriding automatic policy, all-strategy comparison, decimal commas, multiple trips, retrying invalid input, explicit exit, and closed input. Two additional tests launch the real Main process with UTF-8 and CP866 output encodings and verify readable Cyrillic. The actual `run.cmd` was exercised in a terminal with an airport/premium trip, manual selection, automatic selection, comparison, and clean exit. Direct `java -cp target/classes taxi.Main` execution was also checked in a CP866 terminal, including invalid input and exit. The non-interactive demo and invalid-argument exit status are also verified.
+Verified on JDK 21 with Maven 3.9.12: **53 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 34 matching, extension, and console checks. Menu tests cover both preset routes, manual-to-automatic switching, overriding automatic policy, all-strategy comparison, retrying invalid choices, explicit exit, and closed input. Two tests launch the real Main process with UTF-8 and CP866 output encodings and verify readable Cyrillic. The simplified menu, optional demonstration, and error exits are also checked through the actual executable.
 
 | Requirement | Implementation or evidence |
 |---|---|

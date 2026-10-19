@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.function.Function;
 
 public final class Main {
     private Main() {}
@@ -42,94 +41,71 @@ public final class Main {
     }
 
     private static void demonstrate(Ride ride, Demand demand, PrintStream out) {
-        DemandSource source = new SimulatedDemandSource(demand);
-        PricingSelector pricing = new PricingSelector(source);
+        PricingSelector pricing = new PricingSelector(new SimulatedDemandSource(demand));
         DriverSelector matching = new DriverSelector();
         List<Driver> drivers = availableDrivers();
-
-        out.println("TAXI STRATEGY DEMO");
-        out.println("Same ride: " + ride);
-        out.println("Simulated external demand: " + demand);
-        out.println("Same available drivers: " + drivers);
-        out.println("\nMANUAL PRICING / RUNTIME SWITCHING (one context)");
         PricingContext fare = new PricingContext(pricing.manual("standard"));
-        for (String name : List.of("standard", "surge", "airport")) {
-            fare.setStrategy(pricing.manual(name));
-            out.println(name + " -> " + fare.price(ride) + " KZT");
-        }
-        out.println("\nAUTOMATIC PRICING");
-        PricingStrategy selectedFare = pricing.select(ride);
-        fare.setStrategy(selectedFare);
-        out.println(selectedFare.getClass().getSimpleName() + " -> " + fare.price(ride) + " KZT");
-
-        out.println("\nMANUAL DRIVER MATCHING / RUNTIME SWITCHING (one context)");
         DriverMatchingContext driver = new DriverMatchingContext(matching.manual("nearest"));
-        for (String name : List.of("nearest", "rated", "idle")) {
-            driver.setStrategy(matching.manual(name));
-            out.println(name + " -> " + driver.match(drivers).name());
+        String[] tariffs = {"standard", "surge", "airport"};
+        String[] fareNames = {"Обычный", "По спросу", "Аэропортовый"};
+        String[] policies = {"nearest", "rated", "idle"};
+        String[] driverNames = {"Ближайший", "Лучший рейтинг", "Дольше всех ждёт"};
+
+        out.println("\nСравнение для одной поездки: " + ride.distanceKm() + " км.");
+        out.println("Все тарифы:");
+        for (int i = 0; i < tariffs.length; i++) {
+            fare.setStrategy(pricing.manual(tariffs[i]));
+            out.println(fareNames[i] + ": " + fare.price(ride) + " KZT");
         }
-        out.println("\nAUTOMATIC DRIVER MATCHING");
-        DriverMatchingStrategy selectedDriver = matching.select(ride);
-        driver.setStrategy(selectedDriver);
-        out.println(selectedDriver.getClass().getSimpleName() + " -> " + driver.match(drivers).name());
+        out.println("Все способы подбора водителя:");
+        for (int i = 0; i < policies.length; i++) {
+            driver.setStrategy(matching.manual(policies[i]));
+            out.println(driverNames[i] + ": " + driver.match(drivers).name());
+        }
+        fare.setStrategy(pricing.select(ride));
+        driver.setStrategy(matching.select(ride));
+        out.println("Автоматически: " + fare.price(ride) + " KZT, водитель " + driver.match(drivers).name());
     }
 
     static void interactive(Scanner input, PrintStream out) {
         out.println("ТАКСИ - ИНТЕРАКТИВНОЕ МЕНЮ");
         try {
             while (true) {
-                int start = integer(input, out, "\n1 - Новая поездка; 0 - Выход: ", 0, 1);
-                if (start == 0) {
+                int route = integer(input, out,
+                        "\nКуда едем?\n1 - По городу (10 км)\n2 - В аэропорт (25 км)\n0 - Выход\nВаш выбор: ", 0, 2);
+                if (route == 0) {
                     out.println("До свидания!");
                     return;
                 }
-                boolean airport = integer(input, out, "Куда едем? 1 - Город; 2 - Аэропорт: ", 1, 2) == 2;
-                double km = ask(input, out, "Расстояние в км (0-10000): ", value -> {
-                    double distance = Double.parseDouble(value.replace(',', '.'));
-                    new Ride(distance, 0, false, false);
-                    return distance;
-                });
-                int minutes = integer(input, out, "Время поездки в минутах (0-10000): ", 0, 10_000);
-                boolean premium = integer(input, out, "Клиент: 1 - Обычный; 2 - Премиум: ", 1, 2) == 2;
-                Ride ride = new Ride(km, minutes, airport, premium);
-                int demandMode = integer(input, out,
-                        "Симуляция внешнего спроса: 1 - Обычный (10/10); 2 - Высокий (20/10): ", 1, 2);
-                Demand demand = new Demand(demandMode * 10, 10);
+                Ride ride = route == 1 ? new Ride(10, 15, false, false) : new Ride(25, 40, true, false);
+                Demand demand = new Demand(20, 10);
                 PricingSelector pricing = new PricingSelector(new SimulatedDemandSource(demand));
                 DriverSelector matching = new DriverSelector();
                 PricingContext fare = new PricingContext(pricing.manual("standard"));
                 DriverMatchingContext driver = new DriverMatchingContext(matching.manual("nearest"));
                 List<Driver> drivers = availableDrivers();
-                out.println("\nПоездка: " + (airport ? "аэропорт" : "город") + ", " + km + " км, " + minutes + " мин.");
-                out.println("Доступные водители: " + drivers);
-                out.println("Меняйте режим для этой же поездки - объекты контекстов сохраняются.");
+                out.println(route == 1 ? "\nПоездка по городу, 10 км." : "\nПоездка в аэропорт, 25 км.");
 
                 while (true) {
                     int action = integer(input, out,
-                            "\n1 - Автоматический выбор; 2 - Ручной выбор; 3 - Сравнить все; 0 - Назад: ", 0, 3);
+                            "\n1 - Выбрать автоматически\n2 - Выбрать вручную\n3 - Сравнить все варианты\n0 - Другая поездка\nВаш выбор: ", 0, 3);
                     if (action == 0) break;
                     if (action == 3) {
                         demonstrate(ride, demand, out);
                         continue;
                     }
-                    PricingStrategy selectedFare;
-                    DriverMatchingStrategy selectedDriver;
                     if (action == 1) {
-                        selectedFare = pricing.select(ride);
-                        selectedDriver = matching.select(ride);
+                        fare.setStrategy(pricing.select(ride));
+                        driver.setStrategy(matching.select(ride));
                     } else {
                         int tariff = integer(input, out,
-                                "Тариф: 1 - Обычный; 2 - По спросу; 3 - Аэропортовый: ", 1, 3);
+                                "\nТариф: 1 - Обычный; 2 - По спросу; 3 - Аэропортовый: ", 1, 3);
                         int policy = integer(input, out,
                                 "Водитель: 1 - Ближайший; 2 - Лучший рейтинг; 3 - Дольше всех ждёт: ", 1, 3);
-                        selectedFare = pricing.manual(List.of("standard", "surge", "airport").get(tariff - 1));
-                        selectedDriver = matching.manual(List.of("nearest", "rated", "idle").get(policy - 1));
+                        fare.setStrategy(pricing.manual(List.of("standard", "surge", "airport").get(tariff - 1)));
+                        driver.setStrategy(matching.manual(List.of("nearest", "rated", "idle").get(policy - 1)));
                     }
-                    fare.setStrategy(selectedFare);
-                    driver.setStrategy(selectedDriver);
-                    out.println("Тариф: " + selectedFare.getClass().getSimpleName());
                     out.println("Стоимость: " + fare.price(ride) + " KZT");
-                    out.println("Подбор: " + selectedDriver.getClass().getSimpleName());
                     out.println("Водитель: " + driver.match(drivers).name());
                 }
             }
@@ -139,24 +115,17 @@ public final class Main {
     }
 
     private static int integer(Scanner input, PrintStream out, String prompt, int min, int max) {
-        return ask(input, out, prompt, value -> {
-            int number = Integer.parseInt(value);
-            if (number < min || number > max)
-                throw new IllegalArgumentException("Допустимый диапазон: " + min + "-" + max);
-            return number;
-        });
-    }
-
-    private static <T> T ask(Scanner input, PrintStream out, String prompt, Function<String, T> parse) {
         while (true) {
             out.print(prompt);
             out.flush();
             String value = input.nextLine().strip();
             try {
-                return parse.apply(value);
-            } catch (IllegalArgumentException invalid) {
-                out.println("Ошибка: проверьте формат и допустимый диапазон. Повторите ввод.");
+                int number = Integer.parseInt(value);
+                if (number >= min && number <= max) return number;
+            } catch (NumberFormatException invalid) {
+                // Re-request the same choice below.
             }
+            out.println("Введите номер от " + min + " до " + max + ".");
         }
     }
 

@@ -21,20 +21,19 @@ class MainTest {
 
     @Test void defaultDemoShowsEveryAlgorithmAndAutomaticChoice() {
         String output = demo("--demo");
-        for (String expected : new String[]{"standard -> 2000 KZT", "surge -> 4000 KZT", "airport -> 4500 KZT",
-                "nearest -> Aruzhan", "rated -> Dias", "idle -> Miras", "SurgePricing -> 4000 KZT",
-                "NearestDriver -> Aruzhan", "RUNTIME SWITCHING"}) assertTrue(output.contains(expected), expected);
+        for (String expected : new String[]{"Обычный: 2000 KZT", "По спросу: 4000 KZT", "Аэропортовый: 4500 KZT",
+                "Ближайший: Aruzhan", "Лучший рейтинг: Dias", "Дольше всех ждёт: Miras",
+                "Автоматически: 4000 KZT, водитель Aruzhan"}) assertTrue(output.contains(expected), expected);
     }
 
     @Test void customAirportPremiumInputActivatesBothPriorityRules() {
         String output = demo("25", "40", "true", "true", "100", "10");
-        assertTrue(output.contains("AirportPricing -> 5500 KZT"));
-        assertTrue(output.contains("HighestRatedDriver -> Dias"));
+        assertTrue(output.contains("Автоматически: 5500 KZT, водитель Dias"));
     }
 
     @Test void lowDemandAndNonPremiumAirportActivateOtherRules() {
-        assertTrue(demo("10", "15", "false", "false", "10", "10").contains("StandardPricing -> 2000 KZT"));
-        assertTrue(demo("10", "15", "true", "false", "10", "10").contains("LongestIdleDriver -> Miras"));
+        assertTrue(demo("10", "15", "false", "false", "10", "10").contains("Автоматически: 2000 KZT, водитель Aruzhan"));
+        assertTrue(demo("10", "15", "true", "false", "10", "10").contains("Автоматически: 4500 KZT, водитель Miras"));
     }
 
     @Test void malformedArgumentsFailClearly() {
@@ -51,39 +50,42 @@ class MainTest {
     }
 
     @Test void interactiveTripCanSwitchFromManualToAutomaticAndCompareAll() {
-        String output = console("1\n2\n25\n40\n2\n2\n2\n1\n3\n1\n3\n0\n0\n");
+        String output = console("2\n2\n1\n2\n1\n3\n0\n0\n");
         assertTrue(output.contains("Стоимость: 4300 KZT"));
-        assertTrue(output.contains("Водитель: Miras"));
-        assertTrue(output.contains("Стоимость: 5500 KZT"));
         assertTrue(output.contains("Водитель: Dias"));
+        assertTrue(output.contains("Стоимость: 5500 KZT"));
+        assertTrue(output.contains("Водитель: Miras"));
         assertTrue(output.indexOf("Стоимость: 4300 KZT") < output.indexOf("Стоимость: 5500 KZT"));
-        assertTrue(output.contains("standard -> 4300 KZT"));
-        assertTrue(output.contains("surge -> 8600 KZT"));
+        assertTrue(output.contains("Обычный: 4300 KZT"));
+        assertTrue(output.contains("По спросу: 8600 KZT"));
         assertTrue(output.contains("До свидания!"));
     }
 
-    @Test void acceptsDecimalCommaAndCanStartAnotherTrip() {
-        String output = console("1\n1\n10,5\n15\n1\n1\n1\n0\n1\n2\n25\n40\n1\n2\n1\n0\n0\n");
-        assertTrue(output.contains("Стоимость: 2060 KZT"));
-        assertTrue(output.contains("Подбор: NearestDriver"));
-        assertTrue(output.contains("Стоимость: 5500 KZT"));
-        assertTrue(output.contains("Подбор: LongestIdleDriver"));
-    }
-
-    @Test void manualAirportFareAndNearestDriverCanOverrideAutomaticPolicies() {
-        String output = console("1\n1\n10\n15\n2\n2\n2\n3\n1\n1\n0\n0\n");
-        assertTrue(output.contains("Тариф: AirportPricing"));
-        assertTrue(output.contains("Стоимость: 4500 KZT"));
+    @Test void twoRoutesWorkWithoutAskingForExtraTripData() {
+        String output = console("1\n1\n0\n2\n1\n0\n0\n");
+        assertTrue(output.contains("Поездка по городу, 10 км."));
+        assertTrue(output.contains("Стоимость: 4000 KZT"));
         assertTrue(output.contains("Водитель: Aruzhan"));
-        assertTrue(output.contains("Тариф: SurgePricing"));
-        assertTrue(output.contains("Стоимость: 4000 KZT"));
-        assertTrue(output.contains("Водитель: Dias"));
+        assertTrue(output.contains("Поездка в аэропорт, 25 км."));
+        assertTrue(output.contains("Стоимость: 5500 KZT"));
+        assertTrue(output.contains("Водитель: Miras"));
+        for (String removed : new String[]{"Время поездки", "Клиент:", "Симуляция", "Расстояние в км", "Driver[", "Pricing"})
+            assertFalse(output.contains(removed), output);
     }
 
-    @Test void invalidInputIsRetriedWithoutDroppingTheTrip() {
-        String output = console("wrong\n9\n1\n3\n1\nNaN\n-1\n10\n-1\n15\n3\n1\n0\n2\n9\n2\n0\n2\n4\n2\n1\n0\n0\n");
-        assertTrue(output.contains("Ошибка:"));
+    @Test void manualChoiceCanOverrideAutomaticPolicies() {
+        String output = console("1\n2\n3\n2\n1\n0\n0\n");
+        assertTrue(output.contains("Стоимость: 4500 KZT"));
+        assertTrue(output.contains("Водитель: Dias"));
         assertTrue(output.contains("Стоимость: 4000 KZT"));
+        assertTrue(output.contains("Водитель: Aruzhan"));
+    }
+
+    @Test void invalidChoicesAreRetriedWithoutDroppingTheTrip() {
+        String output = console("wrong\n9\n1\n9\n2\n0\n2\n4\n3\n1\n0\n0\n");
+        assertTrue(output.contains("Введите номер"));
+        assertTrue(output.contains("Стоимость: 4000 KZT"));
+        assertTrue(output.contains("Водитель: Miras"));
         assertTrue(output.contains("Водитель: Aruzhan"));
         assertTrue(output.contains("До свидания!"));
     }
@@ -91,7 +93,7 @@ class MainTest {
     @Test void explicitExitAndClosedInputFinishCleanly() {
         assertTrue(console("0\n").contains("До свидания!"));
         assertTrue(console("").contains("Ввод завершён"));
-        assertTrue(console("1\n2\n").contains("Ввод завершён"));
+        assertTrue(console("1\n").contains("Ввод завершён"));
     }
 
     @ParameterizedTest
