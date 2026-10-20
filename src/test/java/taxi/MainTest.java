@@ -22,8 +22,8 @@ class MainTest {
     @Test void defaultDemoShowsEveryAlgorithmAndAutomaticChoice() {
         String output = demo("--demo");
         for (String expected : new String[]{"Обычный: 2000 KZT", "По спросу: 4000 KZT", "Аэропортовый: 4500 KZT",
-                "Ближайший: Aruzhan", "Лучший рейтинг: Dias", "Дольше всех ждёт: Miras",
-                "Автоматически: 4000 KZT, водитель Aruzhan"}) assertTrue(output.contains(expected), expected);
+                "Ближайший: Arman", "Лучший рейтинг: Dias", "Дольше всех ждёт: Miras",
+                "Автоматически: 4000 KZT, водитель Arman"}) assertTrue(output.contains(expected), expected);
     }
 
     @Test void customAirportPremiumInputActivatesBothPriorityRules() {
@@ -32,7 +32,7 @@ class MainTest {
     }
 
     @Test void lowDemandAndNonPremiumAirportActivateOtherRules() {
-        assertTrue(demo("10", "15", "false", "false", "10", "10").contains("Автоматически: 2000 KZT, водитель Aruzhan"));
+        assertTrue(demo("10", "15", "false", "false", "10", "10").contains("Автоматически: 2000 KZT, водитель Arman"));
         assertTrue(demo("10", "15", "true", "false", "10", "10").contains("Автоматически: 4500 KZT, водитель Miras"));
     }
 
@@ -65,7 +65,7 @@ class MainTest {
         String output = console("1\n1\n0\n2\n1\n0\n0\n");
         assertTrue(output.contains("Поездка по городу, 10 км."));
         assertTrue(output.contains("Стоимость: 4000 KZT"));
-        assertTrue(output.contains("Водитель: Aruzhan"));
+        assertTrue(output.contains("Водитель: Arman"));
         assertTrue(output.contains("Поездка в аэропорт, 25 км."));
         assertTrue(output.contains("Стоимость: 5500 KZT"));
         assertTrue(output.contains("Водитель: Miras"));
@@ -78,7 +78,7 @@ class MainTest {
         assertTrue(output.contains("Стоимость: 4500 KZT"));
         assertTrue(output.contains("Водитель: Dias"));
         assertTrue(output.contains("Стоимость: 4000 KZT"));
-        assertTrue(output.contains("Водитель: Aruzhan"));
+        assertTrue(output.contains("Водитель: Arman"));
     }
 
     @Test void invalidChoicesAreRetriedWithoutDroppingTheTrip() {
@@ -86,7 +86,7 @@ class MainTest {
         assertTrue(output.contains("Введите номер"));
         assertTrue(output.contains("Стоимость: 4000 KZT"));
         assertTrue(output.contains("Водитель: Miras"));
-        assertTrue(output.contains("Водитель: Aruzhan"));
+        assertTrue(output.contains("Водитель: Arman"));
         assertTrue(output.contains("До свидания!"));
     }
 

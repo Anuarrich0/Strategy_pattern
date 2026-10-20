@@ -45,7 +45,7 @@ public final class Main {
     }
 
     private static List<Driver> availableDrivers() {
-        return List.of(new Driver("Aruzhan", 1, 4.6, 5),
+        return List.of(new Driver("Arman", 1, 4.6, 5),
                 new Driver("Dias", 3, 4.9, 12), new Driver("Miras", 2, 4.7, 40));
     }
 

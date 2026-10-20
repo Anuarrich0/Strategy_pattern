@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DriverMatchingTest {
-    private final Driver near = new Driver("Aruzhan", 1, 4.6, 5);
+    private final Driver near = new Driver("Arman", 1, 4.6, 5);
     private final Driver rated = new Driver("Dias", 3, 4.9, 12);
     private final Driver idle = new Driver("Miras", 2, 4.7, 40);
     private final List<Driver> drivers = List.of(near, rated, idle);
@@ -23,13 +23,13 @@ class DriverMatchingTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"nearest,Aruzhan", "rated,Dias", "idle,Miras"})
+    @CsvSource({"nearest,Arman", "rated,Dias", "idle,Miras"})
     void eachStrategyChoosesItsExpectedDriver(String name, String expected) {
         assertEquals(expected, new DriverMatchingContext(selector.manual(name)).match(drivers).name());
     }
 
     @ParameterizedTest
-    @CsvSource({"false,false,Aruzhan", "true,false,Miras", "false,true,Dias", "true,true,Dias"})
+    @CsvSource({"false,false,Arman", "true,false,Miras", "false,true,Dias", "true,true,Dias"})
     void selectorCoversEveryRuleWithPremiumTakingPrecedence(boolean airport, boolean premium, String expected) {
         Ride ride = new Ride(10, 15, airport, premium);
         assertEquals(expected, new DriverMatchingContext(selector.select(ride)).match(drivers).name());

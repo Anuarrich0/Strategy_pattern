@@ -128,13 +128,13 @@ The `--demo` input is 10 km, 15 minutes, ordinary trip, ordinary customer, 20 re
 По спросу: 4000 KZT
 Аэропортовый: 4500 KZT
 
-Ближайший: Aruzhan
+Ближайший: Arman
 Лучший рейтинг: Dias
 Дольше всех ждёт: Miras
-Автоматически: 4000 KZT, водитель Aruzhan
+Автоматически: 4000 KZT, водитель Arman
 ```
 
-The pool is Aruzhan (1 km, rating 4.6, idle 5 min), Dias (3 km, rating 4.9, idle 12 min), Miras (2 km, rating 4.7, idle 40 min).
+The pool is Arman (1 km, rating 4.6, idle 5 min), Dias (3 km, rating 4.9, idle 12 min), Miras (2 km, rating 4.7, idle 40 min).
 
 After building, use these commands to demonstrate every automatic rule and both precedence cases:
 
