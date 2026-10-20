@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PricingContractTest {
-    // Fake external source: tests never depend on a live service or clock.
     private final DemandSource fake = () -> new Demand(20, 10);
     private final PricingSelector selector = new PricingSelector(fake);
     private final Ride ride = new Ride(10, 15, false, false);

@@ -60,7 +60,7 @@ mvn clean verify
 java -jar target/taxi-strategy-1.0.0.jar
 ```
 
-On Windows, `./run.cmd` builds and starts the Russian interactive menu in one command. With no arguments, the JAR also opens this menu. To run the fixed demonstration without prompts:
+On Windows, `./run.cmd` builds and starts the English interactive menu in one command. With no arguments, the JAR also opens this menu. To run the fixed demonstration without prompts:
 
 ```powershell
 .\run.cmd --demo
@@ -68,7 +68,7 @@ On Windows, `./run.cmd` builds and starts the Russian interactive menu in one co
 java -jar target/taxi-strategy-1.0.0.jar --demo
 ```
 
-VS Code's Java **Run** action can also launch `taxi.Main` directly. The application keeps Java's native `System.out` encoding and uses the attached console's input charset, so the Russian menu works in both UTF-8 and Windows CP866 terminals. `run.cmd` selects UTF-8 for its terminal before launching Java. After updating the project, stop the old Java process and run Main again to load the rebuilt classes.
+VS Code's Java **Run** action can also launch `taxi.Main` directly. The application keeps Java's native `System.out` encoding and uses the attached console's input charset, so the English menu works in both UTF-8 and Windows CP866 terminals. `run.cmd` selects UTF-8 for its terminal before launching Java. After updating the project, stop the old Java process and run Main again to load the rebuilt classes.
 
 Additional arguments still run a custom demonstration without prompts:
 
@@ -87,7 +87,7 @@ The normal launch needs only two choices:
 1. Choose **City** (`1`, a sample 10 km trip) or **Airport** (`2`, a sample 25 km trip). Choose `0` to exit.
 2. Choose **Automatic** (`1`) to get the fare and driver immediately, **Manual** (`2`) to choose both strategies, or **Compare all** (`3`) to show every algorithm on the same inputs.
 
-The same trip remains open, so you can change strategies repeatedly without entering it again. Choose **Another trip** (`0`) to return to the route menu. Invalid numbers are re-requested; closed input exits cleanly. Results and comparison labels are in Russian, without Java class names or raw records.
+The same trip remains open, so you can change strategies repeatedly without entering it again. Choose **Another trip** (`0`) to return to the route menu. Invalid numbers are re-requested; closed input exits cleanly. Results and comparison labels are in English, without Java class names or raw records.
 
 Trip details are preset demonstration data: city is 10 km / 15 min; airport is 25 km / 40 min; both use an ordinary customer. Simulated external demand is configured as 20 requests / 10 available drivers. The menu does not ask users to configure time, customer type, or the demand source. These fields remain available through the optional CLI inputs for testing every selector rule.
 
@@ -124,14 +124,14 @@ The airport matching policy gives longer-waiting drivers priority for these trip
 The `--demo` input is 10 km, 15 minutes, ordinary trip, ordinary customer, 20 requests, 10 available drivers.
 
 ```text
-Обычный: 2000 KZT
-По спросу: 4000 KZT
-Аэропортовый: 4500 KZT
+Standard: 2000 KZT
+Surge: 4000 KZT
+Airport: 4500 KZT
 
-Ближайший: Arman
-Лучший рейтинг: Dias
-Дольше всех ждёт: Miras
-Автоматически: 4000 KZT, водитель Arman
+Nearest: Arman
+Highest rated: Dias
+Longest idle: Miras
+Automatic: 4000 KZT, driver Arman
 ```
 
 The pool is Arman (1 km, rating 4.6, idle 5 min), Dias (3 km, rating 4.9, idle 12 min), Miras (2 km, rating 4.7, idle 40 min).
@@ -217,7 +217,7 @@ mvn -f ../taxi-before/pom.xml test
 
 Run `mvn clean verify`. JUnit XML/text reports appear in `target/surefire-reports/`; the runnable JAR appears in `target/`. No live services, current time, random values, or shared mutable fixtures are used.
 
-Verified on JDK 21 with Maven 3.9.12: **53 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 34 matching, extension, and console checks. Menu tests cover both preset routes, manual-to-automatic switching, overriding automatic policy, all-strategy comparison, retrying invalid choices, explicit exit, and closed input. Two tests launch the real Main process with UTF-8 and CP866 output encodings and verify readable Cyrillic. The simplified menu, optional demonstration, and error exits are also checked through the actual executable.
+Verified on JDK 21 with Maven 3.9.12: **53 test invocations, 0 failures, 0 errors, 0 skipped**. The baseline passed its 19 pricing checks; the final version passes the same 19 plus 34 matching, extension, and console checks. Menu tests cover both preset routes, manual-to-automatic switching, overriding automatic policy, all-strategy comparison, retrying invalid choices, explicit exit, and closed input. Two tests launch the real Main process with UTF-8 and CP866 output encodings and verify readable English output. The simplified menu, optional demonstration, and error exits are also checked through the actual executable.
 
 | Requirement | Implementation or evidence |
 |---|---|
