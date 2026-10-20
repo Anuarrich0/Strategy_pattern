@@ -37,10 +37,19 @@ src/test/java/taxi/
   matching/
     DriverMatchingTest.java
 
+docs/                       UML images and editable source
 target/                     generated Maven output
 ```
 
 Java package names follow these folders. `taxi.Main` remains the entry point for VS Code and the executable JAR.
+
+## UML class diagram
+
+![Taxi Strategy UML class diagram](docs/class-diagram.svg)
+
+[Open full-size SVG](docs/class-diagram.svg) · [Download PNG](docs/class-diagram.png) · [Editable PlantUML source](docs/class-diagram.puml)
+
+All 18 production types are shown, grouped by their source packages. Solid arrows indicate stored references; dashed arrows indicate dependencies; dashed lines with hollow triangles indicate interface implementation. The filled diamond shows that SurgePricing creates and owns its StandardPricing helper. Constructor injection is an association, since the injected strategy or demand source can be shared. Selectors return concrete strategy implementations; contexts call the interfaces. Record accessors, implicit constructors, and test classes are omitted for readability.
 
 ## Build and run
 
