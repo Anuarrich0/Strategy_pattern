@@ -25,6 +25,7 @@ src/main/java/taxi/
     Demand.java
     DemandSource.java
     SimulatedDemandSource.java
+    FileDemandSource.java
   model/                    trip and driver data
     Ride.java
     Driver.java
@@ -89,7 +90,7 @@ The normal launch needs only two choices:
 
 The same trip remains open, so you can change strategies repeatedly without entering it again. Choose **Another trip** (`0`) to return to the route menu. Invalid numbers are re-requested; closed input exits cleanly. Results and comparison labels are in English, without Java class names or raw records.
 
-Trip details are preset demonstration data: city is 10 km / 15 min; airport is 25 km / 40 min; both use an ordinary customer. Simulated external demand is configured as 20 requests / 10 available drivers. The menu does not ask users to configure time, customer type, or the demand source. These fields remain available through the optional CLI inputs for testing every selector rule.
+Trip details are preset demonstration data: city is 10 km / 15 min; airport is 25 km / 40 min; both use an ordinary customer. External demand is read from `demand.properties`, initially 20 requests / 10 available drivers. The menu does not ask users to configure time, customer type, or the demand source. These fields remain available through the optional CLI inputs for testing every selector rule.
 
 Example defense sequence: choose airport (`2`), manual mode (`2`), standard fare (`1`), highest-rated driver (`2`): **4300 KZT, Dias**. Choose automatic mode (`1`) for the same trip: **5500 KZT, Miras**. Compare all (`3`) then displays every fare and every matching result. The pricing and matching contexts retain their identity while manual and automatic actions call `setStrategy()`. The comparison also switches strategies within its own two contexts. This fulfills the assignment's console-demo requirement.
 
@@ -153,7 +154,7 @@ java -jar target/taxi-strategy-1.0.0.jar 25 40 true true 100 10
 
 ## Isolation from external change
 
-`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `SimulatedDemandSource` provides validated counts from preset menu data or optional demo arguments; no real API is needed. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
+`SurgePricing` depends on our `DemandSource` interface. It reads `current()` on each price request. `FileDemandSource` reads `requests` and `availableDrivers` from `demand.properties` in the working directory on every call. The menu and `--demo` use this file; explicit six-argument CLI inputs override it. Missing files, missing keys, invalid numbers, and invalid counts produce an explicit error. Edit the file to change live demand; no strategy changes are required. `SimulatedDemandSource` remains available for fixed data. Replacing the source requires constructing a different `DemandSource` implementation and injecting it into `PricingSelector` or `SurgePricing`.
 
 Tests inject a fake such as `() -> new Demand(20, 10)`. A separate test changes fake demand between calls to the same strategy to prove that the source is read again. Another test proves an external failure propagates instead of silently inventing a fare. Demand requires 0..1000000 requests and 1..1000000 available drivers, preventing division by zero. The demand denominator represents the simulated city-wide fleet; the three demo drivers are a separate eligible candidate pool.
 
@@ -167,6 +168,7 @@ Each responsibility below is one sentence of at most 25 words without the words 
 | Demand | Holds validated city demand counts. |
 | DemandSource | Defines access to current demand. |
 | SimulatedDemandSource | Supplies configured demand values. |
+| FileDemandSource | Reads validated demand values from a properties file. |
 | PricingStrategy | Defines the fare calculation contract. |
 | StandardPricing | Calculates a metered fare from distance plus duration. |
 | SurgePricing | Calculates a demand-adjusted metered fare. |

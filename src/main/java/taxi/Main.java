@@ -7,10 +7,12 @@ import taxi.matching.DriverSelector;
 import taxi.pricing.PricingContext;
 import taxi.pricing.PricingSelector;
 import taxi.model.Ride;
-import taxi.demand.SimulatedDemandSource;
+import taxi.demand.DemandSource;
+import taxi.demand.FileDemandSource;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -39,9 +41,13 @@ public final class Main {
             throw new IllegalArgumentException("Supply no arguments or exactly six arguments");
         Ride ride = args.length == 0 ? new Ride(10, 15, false, false)
                 : new Ride(Double.parseDouble(args[0]), Integer.parseInt(args[1]), bool(args[2]), bool(args[3]));
-        Demand demand = args.length == 0 ? new Demand(20, 10)
-                : new Demand(Integer.parseInt(args[4]), Integer.parseInt(args[5]));
-        demonstrate(ride, demand, out);
+        DemandSource source;
+        if (args.length == 0) source = new FileDemandSource(Path.of("demand.properties"));
+        else {
+            Demand demand = new Demand(Integer.parseInt(args[4]), Integer.parseInt(args[5]));
+            source = () -> demand;
+        }
+        demonstrate(ride, source, out);
     }
 
     private static List<Driver> availableDrivers() {
@@ -49,8 +55,8 @@ public final class Main {
                 new Driver("Dias", 3, 4.9, 12), new Driver("Miras", 2, 4.7, 40));
     }
 
-    private static void demonstrate(Ride ride, Demand demand, PrintStream out) {
-        PricingSelector pricing = new PricingSelector(new SimulatedDemandSource(demand));
+    private static void demonstrate(Ride ride, DemandSource source, PrintStream out) {
+        PricingSelector pricing = new PricingSelector(source);
         DriverSelector matching = new DriverSelector();
         List<Driver> drivers = availableDrivers();
         PricingContext fare = new PricingContext(pricing.manual("standard"));
@@ -87,8 +93,8 @@ public final class Main {
                     return;
                 }
                 Ride ride = route == 1 ? new Ride(10, 15, false, false) : new Ride(25, 40, true, false);
-                Demand demand = new Demand(20, 10);
-                PricingSelector pricing = new PricingSelector(new SimulatedDemandSource(demand));
+                DemandSource source = new FileDemandSource(Path.of("demand.properties"));
+                PricingSelector pricing = new PricingSelector(source);
                 DriverSelector matching = new DriverSelector();
                 PricingContext fare = new PricingContext(pricing.manual("standard"));
                 DriverMatchingContext driver = new DriverMatchingContext(matching.manual("nearest"));
@@ -100,7 +106,7 @@ public final class Main {
                             "\n1 - Choose automatically\n2 - Choose manually\n3 - Compare all options\n0 - Another trip\nYour choice: ", 0, 3);
                     if (action == 0) break;
                     if (action == 3) {
-                        demonstrate(ride, demand, out);
+                        demonstrate(ride, source, out);
                         continue;
                     }
                     if (action == 1) {
